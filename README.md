@@ -11,7 +11,12 @@ If you encounter any problems feel free to message me on Discord or Twitter. I w
 * Ability to have different tasks use different profiles
 
 ## Installation
-Download Python 3 and ensure the requests module is installed  
+type 
+```bash
+git clone https://github.com/1fge/open-supreme
+```
+Ensure Python 3 with the requests library is installed 
+  
 *Open Supreme* might not work properly on an OS other than Windows (not yet tested)
 
 ## Usage 
@@ -21,12 +26,12 @@ Once all of your tasks are created, open command prompt in the folder and enter:
 ```bash
 python main.py
 ```
-This will start all tasks and they will run until a slug is generated or the product is found (with the exception of some error handling) Unfortunately, there is no implementation to stop a task while letting others run. This is where *Open Supreme* could use help from the community.  
+This will start all tasks and they will run until a slug is generated or the product is found (with the exception of some error handling) Unfortunately, I didn't implement a way to stop a task while still letting others run. This is where *Open Supreme* could use help from the community.  
 
 ## Important Information 
 1. This bot will fail while pooky is enabled as it has no pooky workaround.
 2. I haven't implemented proxy support. This will *probably* get added
 3. Try to be case-sensitive for categories, and for tops and sweaters use ***'Tops/Sweaters'***
-4. Color names must be exact matches (not case-sensitive) otherwise the program won't find your item
-5. For accessories and other items that don't have sizes, enter ***'N/A'*** for size
+4. Color names must be exact matches otherwise the program won't find your item (not case-sensitive)
+5. For items that don't have sizes, enter ***'N/A'*** for size
 6. If you want an extra-large item, enter ***'XLarge'***
