@@ -1,5 +1,6 @@
 # Open Supreme
-*Open Supreme* is a 100% open source requests-based Supreme program created by [@qwkinn](https://twitter.com/qwkinn) (nested#1389)
+*Open Supreme* is a 100% open source requests-based Supreme program  
+Created by [@qwkinn](https://twitter.com/qwkinn) (nested#1389)
   
 If you encounter any problems feel free to message me on Discord or Twitter. I will continue to fix any issues that arise from Supreme modifying their website, but I most likely will not be adding anymore features to the program (including a pooky solution). Your contribution is very much encouraged! 
 
