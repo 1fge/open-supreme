@@ -11,7 +11,8 @@ If you encounter any problems feel free to message me on Discord or Twitter. I w
 * Ability to have different tasks use different profiles
 
 ## Installation
-Download Python 3 and ensure the requests module is installed 
+Download Python 3 and ensure the requests module is installed  
+*Open Supreme* might not work properly on an OS other than Windows (not yet tested)
 
 ## Usage 
 *Open Supreme* comes with two files titled ***addRemoveProfiles.py*** and ***addRemoveTasks.py***. As their names suggest, this is how you will add, remove, view, or delete profiles and tasks. Feel free to run them in an IDE of your choice or simply from the command line. I highly recommend you DO NOT try and edit  ***profiles.json*** or ***tasks.json*** without the above scripts as it could break the program.
