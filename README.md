@@ -1,6 +1,7 @@
 # Open Supreme
 *Open Supreme* is a 100% open source requests-based Supreme program  
-Created by [@qwkinn](https://twitter.com/qwkinn) (nested#1389)
+Created by [@qwkinn](https://twitter.com/qwkinn) (nested#1389)  
+Join the discord here https://discord.gg/Yfz62NV
   
 If you encounter any problems feel free to message me on Discord or Twitter. I will continue to fix any issues that arise from Supreme modifying their website, but I most likely will not be adding anymore features to the program (including a pooky solution). Your contribution is very much encouraged! 
 
@@ -30,8 +31,9 @@ This will start all tasks and they will run until a slug is generated or the pro
 
 ## Important Information 
 1. This bot will fail while pooky is enabled as it has no pooky workaround.
-2. I haven't implemented proxy support. This will *probably* get added
-3. Try to be case-sensitive for categories, and for tops and sweaters use ***'Tops/Sweaters'***
-4. Color names must be exact matches otherwise the program won't find your item (not case-sensitive)
-5. For items that don't have sizes, enter ***'N/A'*** for size
-6. If you want an extra-large item, enter ***'XLarge'***
+2. *Open Supreme* only works in the U.S. Other regions may be added later. 
+3. I haven't implemented proxy support. This will *probably* get added
+4. Try to be case-sensitive for categories, and for tops and sweaters use ***'Tops/Sweaters'***
+5. Color names must be exact matches otherwise the program won't find your item (not case-sensitive)
+6. For items that don't have sizes, enter ***'N/A'*** for size
+7. If you want an extra-large item, enter ***'XLarge'***
