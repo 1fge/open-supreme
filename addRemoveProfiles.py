@@ -8,10 +8,7 @@ def main():
         print("\nCreating a profile since none were found")
         addProf(jsonFile)
     else:
-        allProfs = []
-        
-        for prof in jsonFile["users"]:
-            allProfs.append((prof["name"],prof["address"]))
+        allProfs = [(prof["name"], prof["address"]) for prof in jsonFile["users"]]
         print("Current Profiles: ")
         
         for i in range(len(allProfs)):
@@ -35,36 +32,22 @@ def main():
 
 
 def addProf(profFile):
-    userName = input("Cardholder's Name: ")
-    userEmail = input("Email: ")
-    userTel = input("Telephone (xxx-xxx-xxxx): ")
-    userAddress = input("Address: ")
-    userApt = input("Appt Num (press enter if n/a): ")
-    userZip = input("Zipcode: ")
-    userCity = input("City: ")
-    userState = input("State (NY, AZ, CA): ")
-    userCountry = "USA"
-    userCardNumber = input("Card Number (Put spaces every 4 digits): ")
-    userExpMonth = input("Card Expiration Month (01, 02, 10, 11): ")
-    userExpYear = input("Card Expiration Year: ")
-    userCvv = input("Card CVV: ")
+    curDict = {}
+    curDict["name"] = input("Cardholder's Name: ")
+    curDict["email"] = input("Email: ")
+    curDict["tel"] = input("Telephone (xxx-xxx-xxxx): ")
+    curDict["address"] = input("Address: ")
+    curDict["apt"] = input("Appt Num (press enter if n/a): ")
+    curDict["zip"] = input("Zipcode: ")
+    curDict["city"] = input("City: ")
+    curDict["state"] = input("State (NY, AZ, CA): ")
+    curDict["country"] = "USA"
+    curDict["cardNumber"] = input("Card Number (Put spaces every 4 digits): ")
+    curDict["expMonth"] = input("Card Expiration Month (01, 02, 10, 11): ")
+    curDict["expYear"] = input("Card Expiration Year: ")
+    curDict["cvv"] = input("Card CVV: ")
     print("\nAppending to Profiles")
 
-    curDict = {}
-    curDict["name"] = userName
-    curDict["email"] = userEmail
-    curDict["tel"] = userTel
-    curDict["address"] = userAddress
-    curDict["apt"] = userApt
-    curDict["zip"] = userZip
-    curDict["city"] = userCity
-    curDict["state"] = userState
-    curDict["country"] = userCountry
-    curDict["cardNumber"] = userCardNumber
-    curDict["expMonth"] = userExpMonth
-    curDict["expYear"] = userExpYear
-    curDict["cvv"] = userCvv
-    
     profFile["users"].append(curDict)
     with open("profiles.json", "w") as f:
         json.dump(profFile, f)

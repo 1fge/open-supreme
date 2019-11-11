@@ -17,9 +17,9 @@ def parseMobileStock(keywords, color, size, category, qCount):
     for i in range(len(allProdsInCat)):
         prodName = r["products_and_categories"][category][i]["name"]
         count = 0
-        for _ in keywords:
-            _ = _.upper()
-            if _ in prodName.upper():
+        for kw in keywords:
+            kw = kw.upper()
+            if kw in prodName.upper():
                 count += 1
             else:
                 break

@@ -63,7 +63,8 @@ def atcCheckout(itId, styId, sizId, start, profileInfo):
     z = s.post(coUrl, headers=coHeaders, data=coData)
     end = time.time()
     allTime = end - start
-
+    allTime = round(allTime, 3)
+    allTime = f"Slug generated in {allTime} seconds"
     return (z.json(), allTime)
 
 def getStatus(slug):
