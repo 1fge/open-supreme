@@ -3,10 +3,16 @@ import json, time
 def main():
     with open("tasks.json", "r") as jFile:
         jsonFile = json.load(jFile)
+    with open("profiles.json", "r") as f:
+        pFile = json.load(f)
         
     if len(jsonFile) == 0:
-        print("\nCreating a task since none were found")
-        addTask(jsonFile)
+        if len(pFile["users"]) != 0:
+            print("\nCreating a task since none were found")
+            addTask(jsonFile)
+        else:
+            print("Close this program and make a profile before adding tasks")
+            time.sleep(500)
     else:
         allTasks = []
         for task in jsonFile:
@@ -15,7 +21,11 @@ def main():
         response = input("Would you like to add, delete, view, or edit tasks?\n'0': Add\n'1': Delete\n'2': View\n'3': Edit\n> ")
 
         if response.upper() == "add".upper() or response == "0":
-            addTask(jsonFile)
+            if len(pFile["users"]) == 0:
+                print("Make sure you create a profile before you add tasks")
+                time.sleep(1.75)
+            else:
+                addTask(jsonFile)
         elif response.upper() == "delete".upper() or response == "1":
             deleteTask(jsonFile)
         elif response.upper() == "view".upper() or response == "2":
@@ -32,13 +42,13 @@ def addTask(tasksFile):
     with open("profiles.json", "r") as pFile:
         profileFile = json.load(pFile)
     profile = -1            
-    taskName = input("Task Name: ")
-    keywords = input("Enter all keywords separated by a comma: ")
+    taskName = input("Task Name: ").strip()
+    keywords = input("Enter all keywords separated by a comma: ").strip()
     keywords = keywords.split(",")
     print(keywords)
-    category = input("Category: ")
-    color = input("Color: ")
-    size = input("Size (N/A for sizeless items): ")
+    category = input("Category: ").strip()
+    color = input("Color: ").strip()
+    size = input("Size (N/A for sizeless items): ").strip()
     
     print("\n")
     for a, b in enumerate(profileFile["users"]):
@@ -134,6 +144,9 @@ def editTask(tasksFile):
         with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
         time.sleep(2)
-        
+
+
+    
+          
 while True:
     main()

@@ -33,19 +33,19 @@ def main():
 
 def addProf(profFile):
     curDict = {}
-    curDict["name"] = input("Cardholder's Name: ")
-    curDict["email"] = input("Email: ")
-    curDict["tel"] = input("Telephone (xxx-xxx-xxxx): ")
-    curDict["address"] = input("Address: ")
-    curDict["apt"] = input("Appt Num (press enter if n/a): ")
-    curDict["zip"] = input("Zipcode: ")
-    curDict["city"] = input("City: ")
-    curDict["state"] = input("State (NY, AZ, CA): ")
+    curDict["name"] = input("Cardholder's Name: ").strip()
+    curDict["email"] = input("Email: ").strip()
+    curDict["tel"] = input("Telephone (xxx-xxx-xxxx): ").strip()
+    curDict["address"] = input("Address: ").strip()
+    curDict["apt"] = input("Appt Num (press enter if n/a): ").strip()
+    curDict["zip"] = input("Zipcode: ").strip()
+    curDict["city"] = input("City: ").strip()
+    curDict["state"] = input("State (NY, AZ, CA): ").strip().upper()
     curDict["country"] = "USA"
-    curDict["cardNumber"] = input("Card Number (Put spaces every 4 digits): ")
-    curDict["expMonth"] = input("Card Expiration Month (01, 02, 10, 11): ")
-    curDict["expYear"] = input("Card Expiration Year: ")
-    curDict["cvv"] = input("Card CVV: ")
+    curDict["cardNumber"] = input("Card Number (Put spaces every 4 digits): ").strip()
+    curDict["expMonth"] = input("Card Expiration Month (01, 02, 10, 11): ").strip()
+    curDict["expYear"] = input("Card Expiration Year (2021, 2024): ").strip()
+    curDict["cvv"] = input("Card CVV: ").strip()
     print("\nAppending to Profiles")
 
     profFile["users"].append(curDict)

@@ -41,18 +41,24 @@ def go(keywords, color, size, category, profileInformation, taskName):
             time.sleep(2)
             go(keywords, color, size, category, profileInformation, taskName)
 
-if __name__ == "__main__":            
-    proccx = []        
-    for task in tasks:
-        keywords = tasks[task]["KWs"]
-        category = tasks[task]["category"]
-        color = tasks[task]["color"]
-        size = tasks[task]["size"]
-        whichProfile = tasks[task]["profile"]
-        profileInformation = gu(whichProfile)
+if __name__ == "__main__":
+    with open("tasks.json", "r") as f:
+            jFile = json.load(f)
+    if len(jFile) == 0:
+            print("Ensure you add tasks and a profile before starting the bot")
+            time.sleep(.5)
+    else:
+            proccx = []        
+            for task in tasks:
+                keywords = tasks[task]["KWs"]
+                category = tasks[task]["category"]
+                color = tasks[task]["color"]
+                size = tasks[task]["size"]
+                whichProfile = tasks[task]["profile"]
+                profileInformation = gu(whichProfile)
 
-        p = Process(target=go, args=(keywords, color, size, category, profileInformation, task))
-        proccx.append(p)
-    for p in proccx:
-        p.start()
+                p = Process(target=go, args=(keywords, color, size, category, profileInformation, task))
+                proccx.append(p)
+            for p in proccx:
+                p.start()
 
