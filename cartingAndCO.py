@@ -64,7 +64,7 @@ def atcCheckout(itId, styId, sizId, start, profileInfo):
     end = time.time()
     allTime = end - start
     allTime = round(allTime, 3)
-    allTime = f"Slug generated in {allTime} seconds"
+    allTime = f"\nCheckout details sent in {allTime} seconds"
     return (z.json(), allTime)
 
 def getStatus(slug):

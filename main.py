@@ -22,7 +22,7 @@ def go(keywords, color, size, category, profileInformation, taskName):
              sizeId = returnedIds[1]
 
              result = cartCO(itemId, styleId, sizeId, start, profileInformation)
-             print(result)
+             print(result[0], result[1])
              
              if "slug" in result[0]:
                  slug = result[0]
