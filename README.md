@@ -1,8 +1,10 @@
 # Open Supreme
 *Open Supreme* is a 100% open source requests-based Supreme program  
+
 Created by [@qwkinn](https://twitter.com/qwkinn) (nested#1389)  
-Join the discord here https://discord.gg/Yfz62NV
-  
+Join the discord here https://discord.gg/Yfz62NV  
+Watch the video tutorial from Drops by Mitch here https://www.youtu.be/aNO_1Oxs0RY&   
+
 If you encounter any problems feel free to message me on Discord or Twitter. I will continue to fix any issues that arise from Supreme modifying their website, but I most likely will not be adding anymore features to the program (including a pooky solution). Your contribution is very much encouraged! 
 
 ## Features
@@ -18,7 +20,6 @@ git clone https://github.com/1fge/open-supreme
 ```
 Ensure Python 3 with the requests library is installed 
   
-*Open Supreme* might not work properly on an OS other than Windows (not yet tested)
 
 ## Usage 
 *Open Supreme* comes with two files titled ***addRemoveProfiles.py*** and ***addRemoveTasks.py***. As their names suggest, this is how you will add, remove, view, or delete profiles and tasks. Feel free to run them in an IDE of your choice or simply from the command line. I highly recommend you DO NOT try and edit  ***profiles.json*** or ***tasks.json*** without the above scripts as it could break the program.
