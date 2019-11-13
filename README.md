@@ -3,7 +3,7 @@
 
 Created by [@qwkinn](https://twitter.com/qwkinn) (nested#1389)  
 Join the discord here https://discord.gg/Yfz62NV  
-**Watch the video tutorial from Drops by Mitch [here](https://www.youtu.be/aNO_1Oxs0RY)**  
+**Watch the video tutorial from Drops by Mitch [here](https://www.youtube.com/watch?v=aNO_1Oxs0RY)**  
 
 If you encounter any problems feel free to message me on Discord or Twitter. I will continue to fix any issues that arise from Supreme modifying their website, but I most likely will not be adding anymore features to the program (including a pooky solution). Your contribution is very much encouraged! 
 
