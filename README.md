@@ -10,6 +10,7 @@ If you encounter any problems feel free to message me on Discord or Twitter. I w
 ## Features
 * **1 Second Checkout Time**  
 * Unlimited Tasks that run concurrently
+* Proxy support
 * Captcha Bypass    
 * Ability to have different tasks use different profiles
 
