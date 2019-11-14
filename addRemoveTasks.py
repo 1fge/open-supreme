@@ -49,6 +49,10 @@ def addTask(tasksFile):
     category = input("Category: ").strip()
     color = input("Color: ").strip()
     size = input("Size (N/A for sizeless items): ").strip()
+    proxy = input("Proxy with port ex. 1.1.1.1:111 (press enter if n/a): ").strip()
+
+    if len(proxy) < 3:
+        proxy = ""
     
     print("\n")
     for a, b in enumerate(profileFile["users"]):
@@ -67,6 +71,8 @@ def addTask(tasksFile):
     tasksFile[taskName]["color"] = color
     tasksFile[taskName]["size"] = size
     tasksFile[taskName]["profile"] = profile
+    tasksFile[taskName]["proxy"] = proxy
+
     with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
             time.sleep(2.5)
@@ -96,19 +102,21 @@ def viewTask(tasksFile):
         print(f"Category: {tasksFile[whichTask]['category']}")
         print(f"Color: {tasksFile[whichTask]['color']}")
         print(f"Size: {tasksFile[whichTask]['size']}")
-        print(f"Profile: {tasksFile[whichTask]['profile']}\n")
+        print(f"Profile: {tasksFile[whichTask]['profile']}")
+        print(f"Proxy: {tasksFile[whichTask]['proxy']}\n")
 
         time.sleep(2.5)
         
 def editTask(tasksFile):
     whichTask = input("Enter the name of the task you wish to edit: ")
-    if whichTask not in tasksFile:
+    while whichTask not in tasksFile:
         print(f"Could not find task '{whichTask}'\n")
-        editTask(tasksFile)
+        whichTask = input("Enter the name of the task you wish to edit: ")
+
         
     parts = ["task name"]
-    for _ in tasksFile[whichTask]:
-        parts.append(_)
+    for part in tasksFile[whichTask]:
+        parts.append(part)
     whichPart = input(f"\nWhich part of the task would you like to edit?\n({', '.join(parts)}): ")
 
     if whichPart not in parts:
@@ -134,11 +142,24 @@ def editTask(tasksFile):
         with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
         time.sleep(2)
-        
+    elif whichPart == "proxy":
+        if tasksFile[whichTask][whichPart] == "":
+            print(f"\n'{whichTask}' currently has no proxy")
+        else:
+            print(f"\n{whichTask}'s {whichPart} is currently {tasksFile[whichTask][whichPart]}")
+        newProx = input("Enter a new value for 'proxy' (press enter if n/a): ")
+
+        if len(newProx) < 4:
+            newProx = ""
+        tasksFile[whichTask]["proxy"] = newProx
+        print(f"'proxy' in task '{whichTask}' changed to {newProx}\n")
+        with open("tasks.json", "w") as f:
+            json.dump(tasksFile, f)
+        time.sleep(2)    
     else:
         print(f"\n{whichTask}'s {whichPart} is currently '{tasksFile[whichTask][whichPart]}'")
         newChange = input(f"Enter what you would like to change the {whichPart} to: ")
-        print(f"{whichPart} in task {whichTask} changed to {newChange}\n")
+        print(f"{whichPart} in task '{whichTask}' changed to {newChange}\n")
         tasksFile[whichTask][whichPart] = newChange
 
         with open("tasks.json", "w") as f:

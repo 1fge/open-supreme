@@ -1,6 +1,6 @@
 import requests, time
     
-def atcCheckout(itId, styId, sizId, start, profileInfo):
+def atcCheckout(itId, styId, sizId, start, profileInfo, proxy):
     s = requests.Session()
     url = f"https://www.supremenewyork.com/shop/{itId}/add.json"
 
@@ -37,7 +37,6 @@ def atcCheckout(itId, styId, sizId, start, profileInfo):
         'store_credit_id': '',
         'from_mobile': '1',
         'same_as_billing_address': '1',
-        'scerkhaj': 'CKCRSUJHXH',
         'order[billing_name]': '',
         'order[bn]': profileInfo["userName"],
         'order[email]': profileInfo["userEmail"],
@@ -60,15 +59,39 @@ def atcCheckout(itId, styId, sizId, start, profileInfo):
     coData["cookie-sub"] = cookSub
     coUrl = "https://www.supremenewyork.com/checkout.json"
     
-    z = s.post(coUrl, headers=coHeaders, data=coData)
+    if proxy == "":
+        z = s.post(coUrl, headers=coHeaders, data=coData)
+    else:
+        proxies = {
+            "http": f"http://{proxy}",
+            "https": f"https://{proxy}"
+            }
+        try:
+            z = s.post(coUrl, headers=coHeaders, data=coData, proxies=proxies)
+        except:
+            print(f"Proxy {proxy} failed at checkout")
+            exit()
+
     end = time.time()
     allTime = end - start
     allTime = round(allTime, 3)
     allTime = f"\nCheckout details sent in {allTime} seconds"
     return (z.json(), allTime)
 
-def getStatus(slug):
+def getStatus(slug, proxy):
     statUrl = f"https://www.supremenewyork.com/checkout/{slug}/status.json"
-    r = requests.get(statUrl).json()
+    
+    if proxy == "":
+        r = requests.get(statUrl).json()
 
+    else:
+        proxies = {
+            "http": f"http://{proxy}",
+            "https": f"https://{proxy}"
+            }
+        try:
+            r = requests.get(statUrl, proxies=proxies).json()
+        except:
+            print(f"Proxy {proxy} failed at status check")
+            exit()
     return r["status"]

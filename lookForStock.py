@@ -1,6 +1,6 @@
 import requests, time
 
-def parseMobileStock(keywords, color, size, category, qCount):
+def parseMobileStock(keywords, color, size, category, qCount, proxy):
     itemId = None
     stockUrl = "https://www.supremenewyork.com/mobile_stock.json?"
     stockUrl += str(qCount)
@@ -9,8 +9,20 @@ def parseMobileStock(keywords, color, size, category, qCount):
     'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
     'Content-Type': 'application/x-www-form-urlencoded'
     }
-    
-    r = requests.get(stockUrl, headers=headers).json()
+
+    if proxy == "":
+        r = requests.get(stockUrl, headers=headers).json()
+    else:
+        proxies = {
+            "http": f"http://{proxy}",
+            "https": f"https://{proxy}"
+            }
+        try:
+            r = requests.get(stockUrl, headers=headers, proxies=proxies).json()
+        except:
+            print(f"Proxy {proxy} failed while looking for product")
+            exit()
+
     category = category.title()
 
     allProdsInCat = r["products_and_categories"][category]
@@ -28,17 +40,17 @@ def parseMobileStock(keywords, color, size, category, qCount):
             itemId = r["products_and_categories"][category][i]["id"]
     return itemId
 
-def keepLooking(KWs, clr, _siz, _cat):
+def keepLooking(KWs, clr, _siz, _cat, proxy):
     qCount = 1
-    result = parseMobileStock(KWs, clr, _siz, _cat, qCount)
+    result = parseMobileStock(KWs, clr, _siz, _cat, qCount, proxy)
     while result == None:
         qCount += 1 
         time.sleep(1.5)
         print(f"Searching for keywords {KWs}")
-        result = parseMobileStock(KWs, clr, _siz, _cat, qCount)
+        result = parseMobileStock(KWs, clr, _siz, _cat, qCount, proxy)
     return result
 
-def findStyle(itemId, color, size, category):
+def findStyle(itemId, color, size, category, proxy):
     styleId = None
     sizeId = None
     
@@ -50,7 +62,18 @@ def findStyle(itemId, color, size, category):
     'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
     'Content-Type': 'application/x-www-form-urlencoded'
     }
-    r = requests.get(itemUrl, headers=headers).json()
+    if proxy == "":
+        r = requests.get(itemUrl, headers=headers).json()
+    else:
+        proxies = {
+            "http": f"http://{proxy}",
+            "https": f"https://{proxy}"
+            }
+        try:
+            r = requests.get(itemUrl, headers=headers, proxies=proxies).json()
+        except:
+            print(f"Proxy {proxy} failed while searching for style")
+            exit()
     allStyles = r["styles"]
     
     for i in range(len(allStyles)):

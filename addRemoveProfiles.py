@@ -112,8 +112,7 @@ def editProf(profFile, allProfs):
         with open("profiles.json", "w") as f:
             json.dump(profFile, f)
             
-    except Exception as e:
-        print(e)
+    except:
         print("Error with selection")
         time.sleep(1.75)
         editProf(profFile, allProfs)
