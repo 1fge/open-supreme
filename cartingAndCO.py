@@ -1,5 +1,6 @@
-import requests, time
-    
+import requests, time, sys
+from get_params import get_params as gparams
+
 def atcCheckout(itId, styId, sizId, start, profileInfo, proxy):
     s = requests.Session()
     url = f"https://www.supremenewyork.com/shop/{itId}/add.json"
@@ -18,6 +19,7 @@ def atcCheckout(itId, styId, sizId, start, profileInfo, proxy):
     print(q.content)
     
     # this is our checkout portion
+    
     cooks = s.cookies.get_dict()
     cookSub = cooks["pure_cart"]
     coHeaders = {
@@ -32,51 +34,39 @@ def atcCheckout(itId, styId, sizId, start, profileInfo, proxy):
     'Referer': 'https://www.supremenewyork.com/mobile/',
     'TE': 'Trailers'
     }
-
-    coData = {
-        'store_credit_id': '',
-        'from_mobile': '1',
-        'same_as_billing_address': '1',
-        'order[billing_name]': '',
-        'order[bn]': profileInfo["userName"],
-        'order[email]': profileInfo["userEmail"],
-        'order[tel]': profileInfo["userTel"],
-        'order[billing_address]': profileInfo["userAddress"],
-        'order[billing_address_2]': profileInfo["userApt"],
-        'order[billing_zip]': profileInfo["userZip"],
-        'order[billing_city]': profileInfo["userCity"],
-        'order[billing_state]': profileInfo["userState"],
-        'order[billing_country]': profileInfo["userCountry"],
-        'carn': profileInfo["userCardNumber"],
-        'credit_card[month]': profileInfo["userExpMonth"],
-        'credit_card[year]': profileInfo["userExpYear"],
-        'credit_card[vvv]': profileInfo["userCvv"],
-        'order[terms]': '0',
-        'order[terms]': '1'
-    }
-    s.cookies["hasShownCookieNotice"] = "1"
-    s.cookies["lastVisitedFragment"] = "checkout" 
-    coData["cookie-sub"] = cookSub
-    coUrl = "https://www.supremenewyork.com/checkout.json"
     
-    if proxy == "":
-        z = s.post(coUrl, headers=coHeaders, data=coData)
+    checkout_page = s.get("https://www.supremenewyork.com/mobile/#checkout")
+    coData = gparams(profileInfo, checkout_page.content, cookSub)
+    
+    if coData == None:
+        print("\nError with parsing checkout parameters")
+        sys.exit(0)
     else:
-        proxies = {
-            "http": f"http://{proxy}",
-            "https": f"https://{proxy}"
-            }
-        try:
-            z = s.post(coUrl, headers=coHeaders, data=coData, proxies=proxies)
-        except:
-            print(f"Proxy {proxy} failed at checkout")
-            exit()
+        
+        s.cookies["hasShownCookieNotice"] = "1"
+        s.cookies["lastVisitedFragment"] = "checkout" 
+        coUrl = "https://www.supremenewyork.com/checkout.json"
+        
+        if proxy == "":
+            time.sleep(4.75)
+            z = s.post(coUrl, headers=coHeaders, data=coData)
+        else:
+            proxies = {
+                "http": f"http://{proxy}",
+                "https": f"https://{proxy}"
+                }
+            try:
+                time.sleep(4.75)
+                z = s.post(coUrl, headers=coHeaders, data=coData, proxies=proxies)
+            except:
+                print(f"Proxy {proxy} failed at checkout")
+                exit()
 
-    end = time.time()
-    allTime = end - start
-    allTime = round(allTime, 3)
-    allTime = f"\nCheckout details sent in {allTime} seconds"
-    return (z.json(), allTime)
+        end = time.time()
+        allTime = end - start
+        allTime = round(allTime, 3)
+        allTime = f"\nCheckout details sent in {allTime} seconds"
+        return (z.json(), allTime)
 
 def getStatus(slug, proxy):
     statUrl = f"https://www.supremenewyork.com/checkout/{slug}/status.json"
@@ -90,8 +80,9 @@ def getStatus(slug, proxy):
             "https": f"https://{proxy}"
             }
         try:
+            time.sleep(4.75)
             r = requests.get(statUrl, proxies=proxies).json()
         except:
             print(f"Proxy {proxy} failed at status check")
-            exit()
+            sys.exit(0)
     return r["status"]
