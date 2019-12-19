@@ -20,7 +20,7 @@ type
 ```bash
 git clone https://github.com/1fge/open-supreme
 ```
-Ensure Python 3 with the requests library is installed 
+Ensure Python 3 with the requests and beautifulsoup4 libraries are installed 
   
 
 ## Usage 
