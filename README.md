@@ -13,6 +13,7 @@ If you encounter any problems feel free to message me on Discord or Twitter. I w
 * Proxy support
 * Captcha Bypass    
 * Ability to have different tasks use different profiles
+* Custom checkout delay per task
 
 ## Installation
 type 
