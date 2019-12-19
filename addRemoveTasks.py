@@ -45,8 +45,7 @@ def addTask(tasksFile):
     profile = -1            
     taskName = input("Task Name: ").strip()
     keywords = input("Enter all keywords separated by a comma: ").strip()
-    keywords = keywords.split(",")
-    
+    keywords = [k_w.strip() for k_w in keywords.split(",")]
     print(keywords)
     
     category = input("Category: ").strip()
@@ -125,8 +124,7 @@ def editTask(tasksFile):
     while whichTask not in tasksFile:
         print(f"Could not find task '{whichTask}'\n")
         whichTask = input("Enter the name of the task you wish to edit: ")
-
-        
+ 
     parts = ["task name"]
     for part in tasksFile[whichTask]:
         parts.append(part)
@@ -136,25 +134,19 @@ def editTask(tasksFile):
         print(f"Error, {whichPart} not found in {whichTask}")
         time.sleep(1.5)
         editTask(tasksFile)
+        
     elif whichPart == "task name":
         newName = input(f"Enter new task name for '{whichTask}': ")
         print(f"Name of task '{whichTask}' changed to '{newName}'\n")
         tasksFile[newName] = tasksFile[whichTask]
         del tasksFile[whichTask]
-
-        with open("tasks.json", "w") as f:
-            json.dump(tasksFile, f)
-        time.sleep(2)
         
     elif whichPart == "KWs":
         print(f"\n{whichTask}'s {whichPart} are currently {tasksFile[whichTask][whichPart]}")
         newKws = input("Enter new keywords with a comma in between each one: ")
-        newKws = newKws.split()
+        newKws = [k_w.strip() for k_w in newKws.split(",")]
         print(f"Changed {whichTask}'s keywords from {tasksFile[whichTask][whichPart]} to {newKws}\n")
         tasksFile[whichTask][whichPart] = newKws
-        with open("tasks.json", "w") as f:
-            json.dump(tasksFile, f)
-        time.sleep(2)
         
     elif whichPart == "proxy":
         if tasksFile[whichTask][whichPart] == "":
@@ -167,10 +159,7 @@ def editTask(tasksFile):
             newProx = ""
         tasksFile[whichTask]["proxy"] = newProx
         print(f"'proxy' in task '{whichTask}' changed to {newProx}\n")
-        with open("tasks.json", "w") as f:
-            json.dump(tasksFile, f)
-        time.sleep(2)
-        
+
     elif whichPart == "delay":
         print(f"\n{whichTask}'s {whichPart} is currently {tasksFile[whichTask][whichPart]}")
         
@@ -183,19 +172,15 @@ def editTask(tasksFile):
                 pass
         tasksFile[whichTask]["delay"] = new_delay
         
-        with open("tasks.json", "w") as f:
-            json.dump(tasksFile, f)
-        time.sleep(2)
-        
     else:
         print(f"\n{whichTask}'s {whichPart} is currently '{tasksFile[whichTask][whichPart]}'")
         newChange = input(f"Enter what you would like to change the {whichPart} to: ")
         print(f"{whichPart} in task '{whichTask}' changed to {newChange}\n")
         tasksFile[whichTask][whichPart] = newChange
 
-        with open("tasks.json", "w") as f:
+    with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
-        time.sleep(2)    
+    time.sleep(2)  
           
 while True:
     main()

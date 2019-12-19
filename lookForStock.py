@@ -4,7 +4,7 @@ def parseMobileStock(keywords, color, size, category, qCount, proxy):
     itemId = None
     stockUrl = "https://www.supremenewyork.com/mobile_stock.json?"
     stockUrl += str(qCount)
-
+    
     headers = {
     'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
     'Content-Type': 'application/x-www-form-urlencoded'
@@ -23,9 +23,18 @@ def parseMobileStock(keywords, color, size, category, qCount, proxy):
             print(f"Proxy {proxy} failed while looking for product")
             exit()
 
-    category = category.title()
-
-    allProdsInCat = r["products_and_categories"][category]
+    for cat in r["products_and_categories"]:
+        if cat.lower() == category.lower():
+            category = cat
+    
+    try:        
+        allProdsInCat = r["products_and_categories"][category]
+    except:
+        print(f"Searching for keywords {keywords}")
+        time.sleep(1.5)
+        qCount += 1 
+        parseMobileStock(keywords, color, size, category, qCount, proxy)
+        
     for i in range(len(allProdsInCat)):
         prodName = r["products_and_categories"][category][i]["name"]
         count = 0
