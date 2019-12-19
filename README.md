@@ -1,7 +1,7 @@
 # Open Supreme
 *Open Supreme* is a 100% open source requests-based Supreme program  
 
-Created by [@qwkinn](https://twitter.com/qwkinn) (nested#1389)  
+Created by [@internalises](https://twitter.com/internalises) (nested#1389)  
 Join the discord here https://discord.gg/Yfz62NV  
 **Watch the video tutorial from Drops by Mitch [here](https://www.youtube.com/watch?v=aNO_1Oxs0RY)**  
 
