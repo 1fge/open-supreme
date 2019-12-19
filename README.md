@@ -16,11 +16,15 @@ If you encounter any problems feel free to message me on Discord or Twitter. I w
 * Custom checkout delay per task
 
 ## Installation
-type 
+To Install Repository:  
 ```bash
 git clone https://github.com/1fge/open-supreme
 ```
-Ensure Python 3 with the requests and beautifulsoup4 libraries are installed 
+To Install Required Modules:  
+```bash
+pip install requirements.txt
+```
+
   
 
 ## Usage 
@@ -35,8 +39,6 @@ This will start all tasks and they will run until a slug is generated or the pro
 ## Important Information 
 1. This bot will fail while pooky is enabled as it has no pooky workaround.
 2. *Open Supreme* only works in the U.S. Other regions may be added later. 
-3. I haven't implemented proxy support. This will *probably* get added
-4. Try to be case-sensitive for categories, and for tops and sweaters use ***'Tops/Sweaters'***
-5. Color names must be exact matches otherwise the program won't find your item (not case-sensitive)
-6. For items that don't have sizes, enter ***'N/A'*** for size
-7. If you want an extra-large item, enter ***'XLarge'***
+3. Color names must be exact matches otherwise the program won't find your item (not case-sensitive)
+4. For items that don't have sizes, enter ***'N/A'*** for size
+5. If you want an extra-large item, enter ***'XLarge'***
