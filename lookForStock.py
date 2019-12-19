@@ -1,9 +1,9 @@
-import requests, time
+import requests, time, random
 
-def parseMobileStock(keywords, color, size, category, qCount, proxy):
+def parseMobileStock(keywords, color, size, category, proxy):
     itemId = None
     stockUrl = "https://www.supremenewyork.com/mobile_stock.json?"
-    stockUrl += str(qCount)
+    stockUrl += str(random.randint(1,10000))
     
     headers = {
     'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
@@ -32,8 +32,7 @@ def parseMobileStock(keywords, color, size, category, qCount, proxy):
     except:
         print(f"Searching for keywords {keywords}")
         time.sleep(1.5)
-        qCount += 1 
-        parseMobileStock(keywords, color, size, category, qCount, proxy)
+        parseMobileStock(keywords, color, size, category, proxy)
         
     for i in range(len(allProdsInCat)):
         prodName = r["products_and_categories"][category][i]["name"]
@@ -47,16 +46,15 @@ def parseMobileStock(keywords, color, size, category, qCount, proxy):
             
         if count == len(keywords):
             itemId = r["products_and_categories"][category][i]["id"]
+            
     return itemId
 
 def keepLooking(KWs, clr, _siz, _cat, proxy):
-    qCount = 1
-    result = parseMobileStock(KWs, clr, _siz, _cat, qCount, proxy)
+    result = parseMobileStock(KWs, clr, _siz, _cat, proxy)
     while result == None:
-        qCount += 1 
         time.sleep(1.5)
         print(f"Searching for keywords {KWs}")
-        result = parseMobileStock(KWs, clr, _siz, _cat, qCount, proxy)
+        result = parseMobileStock(KWs, clr, _siz, _cat, proxy)
     return result
 
 def findStyle(itemId, color, size, category, proxy):
@@ -106,6 +104,6 @@ def findStyle(itemId, color, size, category, proxy):
 
         if colorFound == True and sizeFound == True:
             if soldOut == False:
-                return styleId, sizeId 
+                return styleId, sizeId
             else:
                 return styleId, sizeId, "SOLD OUT"        
