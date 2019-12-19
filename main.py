@@ -9,7 +9,7 @@ from getProfiles import getUsers as gu
 
 with open("tasks.json", "r") as f:
         tasks = json.load(f)
-def go(keywords, color, size, category, profileInformation, taskName, proxy):
+def go(keywords, color, size, category, profileInformation, taskName, proxy, delay):
         start = time.time()
         itemId = kl(keywords, color, size, category, proxy)
         returnedIds = fs(itemId, color, size, category, proxy)
@@ -21,7 +21,7 @@ def go(keywords, color, size, category, profileInformation, taskName, proxy):
              styleId = returnedIds[0]
              sizeId = returnedIds[1]
 
-             result = cartCO(itemId, styleId, sizeId, start, profileInformation, proxy)
+             result = cartCO(itemId, styleId, sizeId, start, profileInformation, proxy, delay)
              print(result[0], result[1])
              
              if "slug" in result[0]:
@@ -35,11 +35,11 @@ def go(keywords, color, size, category, profileInformation, taskName, proxy):
              else:
                  print(f"Checkout failed for task '{taskName}', restarting\n")
                  time.sleep(1.25)
-                 go(keywords, color, size, category, profileInformation, taskName, proxy)
+                 go(keywords, color, size, category, profileInformation, taskName, proxy, delay)
         else:
             print(f"Item sold out for '{taskName}', restarting")
             time.sleep(2)
-            go(keywords, color, size, category, profileInformation, taskName, proxy)
+            go(keywords, color, size, category, profileInformation, taskName, proxy, delay)
 
 if __name__ == "__main__":
     with open("tasks.json", "r") as f:
@@ -56,10 +56,12 @@ if __name__ == "__main__":
                 size = tasks[task]["size"]
                 whichProfile = tasks[task]["profile"]
                 proxy = tasks[task]["proxy"]
+                delay = tasks[task]["delay"]
                 profileInformation = gu(whichProfile)
 
-                p = Process(target=go, args=(keywords, color, size, category, profileInformation, task, proxy))
+                p = Process(target=go, args=(keywords, color, size, category, profileInformation, task, proxy, delay))
                 proccx.append(p)
+
             for p in proccx:
                 p.start()
 

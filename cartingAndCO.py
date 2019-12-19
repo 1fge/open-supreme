@@ -1,7 +1,7 @@
 import requests, time, sys
 from get_params import get_params as gparams
 
-def atcCheckout(itId, styId, sizId, start, profileInfo, proxy):
+def atcCheckout(itId, styId, sizId, start, profileInfo, proxy, delay):
     s = requests.Session()
     url = f"https://www.supremenewyork.com/shop/{itId}/add.json"
 
@@ -46,9 +46,9 @@ def atcCheckout(itId, styId, sizId, start, profileInfo, proxy):
         s.cookies["hasShownCookieNotice"] = "1"
         s.cookies["lastVisitedFragment"] = "checkout" 
         coUrl = "https://www.supremenewyork.com/checkout.json"
-        
+
+        time.sleep(delay)
         if proxy == "":
-            time.sleep(4.75)
             z = s.post(coUrl, headers=coHeaders, data=coData)
         else:
             proxies = {
@@ -56,7 +56,6 @@ def atcCheckout(itId, styId, sizId, start, profileInfo, proxy):
                 "https": f"https://{proxy}"
                 }
             try:
-                time.sleep(4.75)
                 z = s.post(coUrl, headers=coHeaders, data=coData, proxies=proxies)
             except:
                 print(f"Proxy {proxy} failed at checkout")
@@ -66,6 +65,7 @@ def atcCheckout(itId, styId, sizId, start, profileInfo, proxy):
         allTime = end - start
         allTime = round(allTime, 3)
         allTime = f"\nCheckout details sent in {allTime} seconds"
+        
         return (z.json(), allTime)
 
 def getStatus(slug, proxy):

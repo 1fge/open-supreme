@@ -41,15 +41,26 @@ def main():
 def addTask(tasksFile):
     with open("profiles.json", "r") as pFile:
         profileFile = json.load(pFile)
+        
     profile = -1            
     taskName = input("Task Name: ").strip()
     keywords = input("Enter all keywords separated by a comma: ").strip()
     keywords = keywords.split(",")
+    
     print(keywords)
+    
     category = input("Category: ").strip()
     color = input("Color: ").strip()
     size = input("Size (N/A for sizeless items): ").strip()
     proxy = input("Proxy with port ex. 1.1.1.1:111 (press enter if n/a): ").strip()
+
+    delay = ""
+    while type(delay) != float:
+        delay = input("Checkout Delay: ")
+        try:
+            delay = float(delay)
+        except:
+            pass
 
     if len(proxy) < 3:
         proxy = ""
@@ -72,6 +83,7 @@ def addTask(tasksFile):
     tasksFile[taskName]["size"] = size
     tasksFile[taskName]["profile"] = profile
     tasksFile[taskName]["proxy"] = proxy
+    tasksFile[taskName]["delay"] = delay
 
     with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
@@ -102,8 +114,9 @@ def viewTask(tasksFile):
         print(f"Category: {tasksFile[whichTask]['category']}")
         print(f"Color: {tasksFile[whichTask]['color']}")
         print(f"Size: {tasksFile[whichTask]['size']}")
-        print(f"Profile: {tasksFile[whichTask]['profile']}")
-        print(f"Proxy: {tasksFile[whichTask]['proxy']}\n")
+        print(f"\nProfile: {tasksFile[whichTask]['profile']}")
+        print(f"Proxy: {tasksFile[whichTask]['proxy']}")
+        print(f"Delay: {tasksFile[whichTask]['delay']}\n")
 
         time.sleep(2.5)
         
@@ -142,6 +155,7 @@ def editTask(tasksFile):
         with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
         time.sleep(2)
+        
     elif whichPart == "proxy":
         if tasksFile[whichTask][whichPart] == "":
             print(f"\n'{whichTask}' currently has no proxy")
@@ -155,7 +169,24 @@ def editTask(tasksFile):
         print(f"'proxy' in task '{whichTask}' changed to {newProx}\n")
         with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
-        time.sleep(2)    
+        time.sleep(2)
+        
+    elif whichPart == "delay":
+        print(f"\n{whichTask}'s {whichPart} is currently {tasksFile[whichTask][whichPart]}")
+        
+        new_delay = ""
+        while type(new_delay) != float:
+            new_delay = input("Enter new checkout delay: ")
+            try:
+                new_delay = float(new_delay)
+            except:
+                pass
+        tasksFile[whichTask]["delay"] = new_delay
+        
+        with open("tasks.json", "w") as f:
+            json.dump(tasksFile, f)
+        time.sleep(2)
+        
     else:
         print(f"\n{whichTask}'s {whichPart} is currently '{tasksFile[whichTask][whichPart]}'")
         newChange = input(f"Enter what you would like to change the {whichPart} to: ")
@@ -164,10 +195,7 @@ def editTask(tasksFile):
 
         with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
-        time.sleep(2)
-
-
-    
+        time.sleep(2)    
           
 while True:
     main()
