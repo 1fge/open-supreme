@@ -18,7 +18,7 @@ def main():
         for task in jsonFile:
             allTasks.append(task)
         print(f"Current Tasks: {allTasks}\n")
-        response = input("Would you like to add, delete, view, or edit tasks?\n'0': Add\n'1': Delete\n'2': View\n'3': Edit\n> ")
+        response = input("Would you like to add, delete, view, or edit tasks?\n'0': Add\n'1': Delete\n'2': View\n'3': Edit\n'4': Exit\n> ")
 
         if response.upper() == "add".upper() or response == "0":
             if len(pFile["users"]) == 0:
@@ -32,6 +32,8 @@ def main():
             viewTask(jsonFile)
         elif response.upper() == "edit".upper() or response == "3":
             editTask(jsonFile)
+        elif response == "4":
+            return
         else:
             print("Syntax error with choice, restarting\n")
             time.sleep(1.25)
@@ -63,10 +65,11 @@ def addTask(tasksFile):
 
     if len(proxy) < 3:
         proxy = ""
-    
+
     print("\n")
+    print("Current Profiles")
     for a, b in enumerate(profileFile["users"]):
-        print(b["name"],",", b["address"], a)
+        print(b["profName"], a)
     print("\n")
     
     while int(profile) < 0 or int(profile) > len(profileFile["users"]) - 1:       
@@ -86,7 +89,8 @@ def addTask(tasksFile):
 
     with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
-            time.sleep(2.5)
+            time.sleep(1)
+    main()
 
 def deleteTask(tasksFile):
     whichTask = input("Enter the name of the task you wish to delete: ")
@@ -100,7 +104,8 @@ def deleteTask(tasksFile):
         with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
 
-        time.sleep(2)
+        time.sleep(1)
+    main()
 
 def viewTask(tasksFile):
     whichTask = input("Enter the name of the task you wish to view: ")
@@ -117,7 +122,8 @@ def viewTask(tasksFile):
         print(f"Proxy: {tasksFile[whichTask]['proxy']}")
         print(f"Delay: {tasksFile[whichTask]['delay']}\n")
 
-        time.sleep(2.5)
+        time.sleep(1)
+        main()
         
 def editTask(tasksFile):
     whichTask = input("Enter the name of the task you wish to edit: ")
@@ -180,7 +186,6 @@ def editTask(tasksFile):
 
     with open("tasks.json", "w") as f:
             json.dump(tasksFile, f)
-    time.sleep(2)  
+    time.sleep(1)
+    main()  
           
-while True:
-    main()

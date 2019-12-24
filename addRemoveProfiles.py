@@ -8,14 +8,14 @@ def main():
         print("\nCreating a profile since none were found")
         addProf(jsonFile)
     else:
-        allProfs = [(prof["name"], prof["address"]) for prof in jsonFile["users"]]
+        allProfs = [prof["profName"] for prof in jsonFile["users"]]
         print("Current Profiles: ")
         
         for i in range(len(allProfs)):
-            print(allProfs[i], i)
+            print([allProfs[i], i])
         print("\n")
         
-        response = input("Would you like to add, delete, view, or edit profiles?\n'0': Add\n'1': Delete\n'2': View\n'3': Edit\n> ")
+        response = input("Would you like to add, delete, view, or edit profiles?\n'0': Add\n'1': Delete\n'2': View\n'3': Edit\n'4': Exit\n>")
 
         if response.upper() == "add".upper() or response == "0":
             addProf(jsonFile)
@@ -25,6 +25,8 @@ def main():
             viewProf(jsonFile)
         elif response.upper() == "edit".upper() or response == "3":
             editProf(jsonFile, allProfs)
+        elif response == "4":
+            return
         else:
             print("Syntax error with choice, restarting\n")
             time.sleep(1.25)
@@ -33,6 +35,7 @@ def main():
 
 def addProf(profFile):
     curDict = {}
+    curDict["profName"] = input("Profile Name: ").strip()
     curDict["name"] = input("Cardholder's Name: ").strip()
     curDict["email"] = input("Email: ").strip()
     curDict["tel"] = input("Telephone (xxx-xxx-xxxx): ").strip()
@@ -52,7 +55,9 @@ def addProf(profFile):
     with open("profiles.json", "w") as f:
         json.dump(profFile, f)
         
-    time.sleep(1.75)
+    time.sleep(1)
+    main()
+
 def deleteProf(profFile, allProfs):
     profSelection = input("Enter the number of the profile you want to delete: ")
     try:
@@ -69,12 +74,15 @@ def deleteProf(profFile, allProfs):
         time.sleep(1.75)
         deleteProf(profFile, allProfs)
                
-    time.sleep(1.75)
+    time.sleep(1)
+    main()
+    
 def viewProf(profFile):
     profSelection = input("Enter the number of the profile you want to view: ")
     try:
         profSelection = int(profSelection)
         print("\n")
+        print(f"Profile Name: {profFile['users'][profSelection]['profName']}")
         print(f"Name: {profFile['users'][profSelection]['name']}")
         print(f"Email: {profFile['users'][profSelection]['email']}")
         print(f"Telephone: {profFile['users'][profSelection]['tel']}")
@@ -87,7 +95,8 @@ def viewProf(profFile):
         print(f"Expiration Month: {profFile['users'][profSelection]['expMonth']}")
         print(f"Expiration Year: {profFile['users'][profSelection]['expYear']}")
         print(f"CVV: {profFile['users'][profSelection]['cvv']}\n")
-        time.sleep(1.75)
+        time.sleep(1)
+        main()
     except:
         print("Error, enter the number next to the desired profile")
         time.sleep(1.0)
@@ -99,7 +108,7 @@ def editProf(profFile, allProfs):
         whichProf = int(whichProf)
         print(f"Enter aspect of {allProfs[whichProf]} you want to edit \n(CASE SENSITIVE)\n")
 
-        aspects = ["name", "email", "tel", "address", "apt", "zip", "city", "state", "country", "cardNumber", "expMonth", "expYear", "cvv"]
+        aspects = ["profName", "name", "email", "tel", "address", "apt", "zip", "city", "state", "country", "cardNumber", "expMonth", "expYear", "cvv"]
         whichAspect = None
         while whichAspect not in aspects:
             whichAspect = input(f"Aspects: \n{aspects}: ")
@@ -114,9 +123,8 @@ def editProf(profFile, allProfs):
             
     except:
         print("Error with selection")
-        time.sleep(1.75)
+        time.sleep(1)
         editProf(profFile, allProfs)
-    time.sleep(1.75)
-
-while True:
+    time.sleep(1)
     main()
+

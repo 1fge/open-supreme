@@ -1,4 +1,6 @@
 import time, json
+import addRemoveProfiles
+import addRemoveTasks
 from multiprocessing import Process
 
 from lookForStock import keepLooking as kl
@@ -41,27 +43,48 @@ def go(keywords, color, size, category, profileInformation, taskName, proxy, del
             time.sleep(2)
             go(keywords, color, size, category, profileInformation, taskName, proxy, delay)
 
+def start(jFile):
+    if len(jFile) == 0:
+        print("Ensure you add tasks and a profile before starting the bot")
+        time.sleep(.5)
+    proccx = []        
+    for task in tasks:
+        keywords = tasks[task]["KWs"]
+        category = tasks[task]["category"]
+        color = tasks[task]["color"]
+        size = tasks[task]["size"]
+        whichProfile = tasks[task]["profile"]
+        proxy = tasks[task]["proxy"]
+        delay = tasks[task]["delay"]
+        profileInformation = gu(whichProfile)
+
+        p = Process(target=go, args=(keywords, color, size, category, profileInformation, task, proxy, delay))
+        proccx.append(p)
+
+    for p in proccx:
+        p.start()
+    
 if __name__ == "__main__":
     with open("tasks.json", "r") as f:
             jFile = json.load(f)
-    if len(jFile) == 0:
-            print("Ensure you add tasks and a profile before starting the bot")
-            time.sleep(.5)
-    else:
-            proccx = []        
-            for task in tasks:
-                keywords = tasks[task]["KWs"]
-                category = tasks[task]["category"]
-                color = tasks[task]["color"]
-                size = tasks[task]["size"]
-                whichProfile = tasks[task]["profile"]
-                proxy = tasks[task]["proxy"]
-                delay = tasks[task]["delay"]
-                profileInformation = gu(whichProfile)
-
-                p = Process(target=go, args=(keywords, color, size, category, profileInformation, task, proxy, delay))
-                proccx.append(p)
-
-            for p in proccx:
-                p.start()
-
+    while True:
+        print("1: Profiles")
+        print("2: Tasks")
+        print("3: Start bot \n")
+        a = input("Type here to select: ")
+        if a == "1":
+            print()
+            while True:
+                addRemoveProfiles.main()
+                break
+        elif a == '2':
+            print()
+            while True:
+                addRemoveTasks.main()
+                break
+        elif a == '3':
+            start(jFile)
+            break
+        else:
+            print("Invalid input, try again")
+            continue
