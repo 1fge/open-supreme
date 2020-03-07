@@ -22,7 +22,7 @@ git clone https://github.com/1fge/open-supreme
 ```
 To Install Required Modules:  
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
   
