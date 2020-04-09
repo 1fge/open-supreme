@@ -1,1 +1,52 @@
-{}
+{
+    "plaid0": {
+        "pos_kws": [
+            "plaid",
+            "shirt",
+            "printed"
+        ],
+        "neg_kws": [null],
+        "category": "shirts",
+        "color": "tan",
+        "size": "medium",
+        "proxy": "",
+        "delay": 12
+    },
+    "pant0": {
+        "pos_kws": [
+            "track",
+            "pant"
+        ],
+        "neg_kws": [null],
+        "category": "pants",
+        "color": "red glen plaid",
+        "size": "medium",
+        "proxy": "",
+        "delay": 10
+    },
+    "pant1": {
+        "pos_kws": [
+            "track",
+            "pant"
+        ],
+        "neg_kws": [null],
+        "category": "pants",
+        "color": "red glen plaid",
+        "size": "medium",
+        "proxy": "",
+        "delay": 15
+    },
+    "pant2": {
+        "pos_kws": [
+            "track",
+            "pant"
+        ],
+        "neg_kws": [null],
+        "category": "pants",
+        "color": "red glen plaid",
+        "size": "medium",
+        "proxy": "",
+        "delay": 13
+    }
+
+}
