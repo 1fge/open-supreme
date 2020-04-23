@@ -2,16 +2,21 @@ import re
 from bs4 import BeautifulSoup as bs
 
 def get_params(page_content, profile_data, cookie_sub):
-    checkout_data = {}
-    
+    """
+    This needs to be cleaned up further in a later update.
+    It parses supremenewyork.com/mobile/#checkout to get checkout parameters
+    Certain parameters have default values we should keep,
+    others need to be replaced with various data we already have.
+    """
 
+    
+    checkout_data = {}
     regex = re.compile('[^a-zA-Z]')
     soup = bs(page_content, "html.parser")
     scripts = soup.find_all("script")
 
     for script in scripts:
         try:
-            # Need to find a better way to properly parse
             if len(script.text) > 5000:
                 script = script.text
                 soup = bs(script, "html.parser")
@@ -102,7 +107,7 @@ def get_params(page_content, profile_data, cookie_sub):
 
 def check_data(checkout_data, profile_data):
     for key in profile_data:
-        if profile_data[key] not in checkout_data.values():
-
-            return False
+        if key != "id" and key != "profile_name":
+            if profile_data[key] not in checkout_data.values():
+                return False
     return True
