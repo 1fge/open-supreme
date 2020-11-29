@@ -36,7 +36,7 @@ def add_to_cart(item_id, size_id, style_id, task_name, screenlock):
 
     atc_post = s.post(atc_url, headers=headers, data=data)
     if atc_post.json():
-        if atc_post.json()['cart'][0]["in_stock"]:
+        if len(atc_post.json()['cart']) > 0 and atc_post.json()['cart'][0]["in_stock"]:
             with screenlock:
                 print(colored(f"{task_name}: Added to Cart", "blue"))
             return s 
