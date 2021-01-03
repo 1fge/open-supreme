@@ -1,9 +1,86 @@
+import sys
 import time
 import json
+import requests
 import threading
-import sys
 from termcolor import colored
 from opensupreme import return_item_ids, add_to_cart, checkout
+
+class SignaledSession(requests.Session):
+    """Custom requests Session class which which checks if the threading.Event is set before each request"""
+    def __init__(self):
+        super().__init__()
+
+    def get(self, url, **kwargs):
+        if self.event.is_set():
+            sys.exit()
+        return self.request('GET', url, **kwargs)
+
+    def post(self, url, **kwargs):
+        if self.event.is_set():
+            sys.exit()
+        return self.request('POST', url, **kwargs)
+
+class Task(threading.Thread):
+    """Class for each 'task' we wish to run, allows for easily stopping / starting task with threading.Event"""
+    def __init__(self, positive_keywords, negative_keywords, category, size, color, profile_data, proxy, delay, task_name, screenlock):
+        threading.Thread.__init__(self)
+
+        self.positive_keywords = positive_keywords
+        self.negative_keywords = negative_keywords
+        self.category = category
+        self.size = size
+        self.color = color
+        self.profile_data = profile_data
+        self.proxy = proxy
+        self.delay = delay
+        self.task_name = task_name
+        self.screenlock = screenlock
+
+        self.event = threading.Event()
+        self.session = SignaledSession()
+        self.session.event = self.event # pass the threading Event to our custom Session so we can easily check if set
+
+    def run(self):        
+        set_session_proxy(self.session, self.proxy)
+        run_task(
+            self.session,
+            self.positive_keywords, 
+            self.negative_keywords, 
+            self.category, 
+            self.size, 
+            self.color, 
+            self.profile_data, 
+            self.delay, 
+            self.task_name, 
+            self.screenlock
+        )
+
+    def stop(self):
+        self.event.set()
+
+def set_session_proxy(session, proxy):
+    """ Set the proxy to be used by the session
+
+    Args:
+        session (requests.Session): Session object used in all requests
+        proxy (str): Proxy with which to use with session object
+    """
+    proxy = proxy.strip().lower()
+    proxies = {}
+
+    if proxy and proxy.count(":") > 1:
+        ip, port, user, password = proxy.split(":")
+        proxies = {
+            "http" : f"http://{user}:{password}@{ip}:{port}",
+            "https": f"https://{user}:{password}@{ip}:{port}"
+        }
+    elif proxy:
+        proxies = {
+            "http": f"http://{proxy}",
+            "https": f"https://{proxy}"
+        }
+    session.proxies.update(proxies)
 
 def get_profile_data(profile_id, profiles_file):
     """
@@ -20,35 +97,28 @@ def get_profile_data(profile_id, profiles_file):
         return profiles[index]
     else:
         return None
-      
-def run_task(positive_keywords, negative_keywords, category, size, color, profile_data, proxy, delay, task_name, screenlock):
+
+def run_task(session, positive_keywords, negative_keywords, category, size, color, profile_data, delay, task_name, screenlock):
     """
     This function is the target of the threads we make.
     It will keep trying to checkout until it successfully purchases the desired item.
     """
-
     while True:
         with screenlock:
             print(colored(f"{task_name}: Searching for",  attrs=["bold"]), colored(positive_keywords, "cyan"))
 
         start_checkout_time = time.time()
-        item_id, size_id, style_id = return_item_ids(positive_keywords, negative_keywords, category, size, color, proxy, task_name, screenlock)
-        session = add_to_cart(item_id, size_id, style_id, task_name, screenlock)
+        item_id, size_id, style_id = return_item_ids(session, positive_keywords, negative_keywords, category, size, color, task_name, screenlock)
+        session = add_to_cart(session, item_id, size_id, style_id, task_name, screenlock)
         if session:
-            if checkout(session, profile_data, delay, proxy, task_name, start_checkout_time, screenlock):
+            if checkout(session, profile_data, delay, task_name, start_checkout_time, screenlock):
                 break
 
 def create_threads(tasks_file, profiles_file):
-    """
-    From tasks.json and profiles.json, assign the neccessary variables needed to checkout for each task.
-    Then, create a thread for that task and append it to a list of threads.
-    Finally, return the list of threads
-    """
-
     with open(tasks_file) as f:
         tasks = json.load(f)
 
-    threads = []
+    task_threads = []
     screenlock = threading.Lock()
 
     for task in tasks:
@@ -68,20 +138,15 @@ def create_threads(tasks_file, profiles_file):
         if not profile_data:
             print(colored(f"ERROR: No Associated Profile for '{task_name}'", "red"))
         else:
-            t = threading.Thread(target=run_task, args=(
-                positive_keywords, negative_keywords, category,
-                size, color, profile_data,
-                proxy, delay, task_name, screenlock)
-            )
-            t.daemon = True
-            threads.append(t)
-    
-    return threads
+            task_thread = Task(positive_keywords, negative_keywords, category, size, color, profile_data, proxy, delay, task_name, screenlock)
+            task_threads.append(task_thread)
+    return task_threads
+
 
 def run_all(tasks_file, profiles_file):
     """
     Create a list which contains threads for each tasks.
-    Then, start each thread without joining so they run independently of eachother.
+    Then, start each thread so they can run independent of eachother.
     Run until the task completes or the user supplies input.
     """
 
@@ -89,7 +154,12 @@ def run_all(tasks_file, profiles_file):
     if threads:
         for t in threads:
             t.start()
-        input()
+    
+    input() # Allow user to stop all tasks by entering any combination of keys
+    for t in threads:
+        t.stop()
+    for t in threads: # t.join() # Wait for thread to terminate before handing back control
+        t.join()
 
 
 

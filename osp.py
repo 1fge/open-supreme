@@ -13,13 +13,10 @@ def select_choice(selections):
 
     while True:
         user_choice = input("> ")
-
         for item in selections:
             for selection_tag in selections[item]:
                 if user_choice.lower().strip() == selection_tag:
-                    selection = item
-
-                    return selection
+                    return item
 
 def profiles(profiles_path):
     """
@@ -49,11 +46,10 @@ def profiles(profiles_path):
         view_profile(profiles_path)
     elif selection == 3:
         edit_profile(profiles_path)
-    else:
+    elif selection == 4:
         mainmenu()
 
-    if selection != 4:
-        profiles(profiles_path)
+    selection != 4 and profiles(profiles_path) # use short-circuit evaluation to run profiles function if selection not mainmenu
 
 def tasks(tasks_path, profiles_path):
     """
@@ -83,11 +79,10 @@ def tasks(tasks_path, profiles_path):
         view_task(tasks_path, profiles_path)
     elif selection == 3:
         edit_task(tasks_path, profiles_path)
-    else:
+    elif selection == 4:
         mainmenu()
 
-    if selection != 4:
-        tasks(tasks_path, profiles_path)
+    selection != 4 and tasks(tasks_path, profiles_path)
 
 def runbot(tasks_file, profiles_file):
     print(colored("Open Supreme\n", "yellow"))
@@ -102,8 +97,7 @@ def runbot(tasks_file, profiles_file):
 
     if selection == "run":
         run_all(tasks_file, profiles_file)
-    else:
-        mainmenu()
+    mainmenu()
 
 def profiles_exist(profiles_file):
     """
@@ -121,9 +115,8 @@ def tasks_exist(tasks_file):
     """
 
     with open(tasks_file) as f:
-        tasks = json.load(f)
-    if tasks:
-        return True   
+        if json.load(f):
+            return True
 
 def mainmenu():
     """
@@ -160,5 +153,6 @@ def mainmenu():
         else:
             print(colored("You must make a task first!", "red"))
             mainmenu()
+
 if __name__ == "__main__":            
     mainmenu()

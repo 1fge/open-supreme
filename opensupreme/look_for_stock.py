@@ -1,9 +1,8 @@
-import requests
 import time
 import sys
 from termcolor import colored
 
-def get_stock(proxy):
+def get_stock(session):
     """
     Makes a request to Supreme's mobile_stock endpoint.
     Return its content.
@@ -21,33 +20,23 @@ def get_stock(proxy):
         "Cache-Control": "no-cache",
         "TE": "Trailers"
     }
+    return session.get(url, headers=headers).json()
 
-    if not proxy:
-        stock = requests.get(url, headers=headers).json()      
-    else:
-        proxies = {
-            "http": f"http://{proxy}",
-            "https": f"https://{proxy}"
-        }
-        stock = requests.get(url, headers=headers, proxies=proxies).json()
-
-    return stock
-
-def retrieve_item_id(proxy, category, positive_keywords, negative_keywords, task_name, screenlock):
+def retrieve_item_id(session, category, positive_keywords, negative_keywords, task_name, screenlock):
     """
     Until item's id is found, get all stock and compare it
     against our positive and negative keywords.
     """
 
     while True:
-        stock = get_stock(proxy)
+        stock = get_stock(session)
         item_id = parse_for_ids(stock, category, positive_keywords, negative_keywords, task_name, screenlock)
         if item_id:
             return item_id
         
         time.sleep(0.75)
         
-def retrieve_style_ids(item_id, size, style, proxy, task_name, screenlock):
+def retrieve_style_ids(session, item_id, size, style, task_name, screenlock):
     """
     Once we find the item_id, we know our item exists in Supreme's stock endpoint.
     If the item is out of stock, we waiting until it restocks.
@@ -56,7 +45,7 @@ def retrieve_style_ids(item_id, size, style, proxy, task_name, screenlock):
 
     oos = False
     while True:
-        style_return = parse_for_styles(item_id, size, style, proxy, task_name, screenlock)
+        style_return = parse_for_styles(session, item_id, size, style, task_name, screenlock)
         if style_return != "oos":
             size_id = style_return[0]
             style_id = style_return[1]
@@ -67,9 +56,9 @@ def retrieve_style_ids(item_id, size, style, proxy, task_name, screenlock):
             oos = True
 
 
-def return_item_ids(positive_keywords, negative_keywords, category, size, style, proxy, task_name, screenlock):
-    item_id = retrieve_item_id(proxy, category, positive_keywords, negative_keywords, task_name, screenlock)
-    size_id, style_id =  retrieve_style_ids(item_id, size, style, proxy, task_name, screenlock)
+def return_item_ids(session, positive_keywords, negative_keywords, category, size, style, task_name, screenlock):
+    item_id = retrieve_item_id(session, category, positive_keywords, negative_keywords, task_name, screenlock)
+    size_id, style_id =  retrieve_style_ids(session, item_id, size, style, task_name, screenlock)
     return item_id, size_id, style_id
 
 def check_positive_keywords(itemname, positive_keywords):
@@ -126,9 +115,7 @@ def find_category_lookup_table(category):
         "t-shirts": "T-Shirts",
         "new" : "new"
     }
-
     value = categories.get(category.lower(), None)
-    
     if value:
         category = categories[category.lower()]
         return category
@@ -178,7 +165,7 @@ def parse_for_ids(stock, task_category, positive_keywords, negative_keywords, ta
             return item["id"]
 
 
-def get_item_variants(item_id, proxy):
+def get_item_variants(session, item_id):
     """
     Go to the item's endpoint and return its content
     """
@@ -195,26 +182,16 @@ def get_item_variants(item_id, proxy):
         "Cache-Control": "no-cache",
         "TE": "Trailers"
     }
-
-    if not proxy:
-        item_variants = requests.get(item_url, headers=headers).json()
-    else:
-        proxies = {
-            "http": f"http://{proxy}",
-            "https": f"https://{proxy}"
-        }
-        item_variants = requests.get(item_url, headers=headers, proxies=proxies).json()
-
-    return item_variants
+    return session.get(item_url, headers=headers).json()
  
-def parse_for_styles(item_id, size, style, proxy, task_name, screenlock):
+def parse_for_styles(session, item_id, size, style, task_name, screenlock):
     """
     Get all of the different styles and colors for a specific item.
     Then attempt to find a matching size and style. 
     If unsuccessful, stop the program as it can't go further.
     """
 
-    item_variants = get_item_variants(item_id, proxy)
+    item_variants = get_item_variants(session, item_id)
     for stylename in item_variants["styles"]:
         if stylename["name"].lower() == style.lower():
             for itemsize in stylename["sizes"]:
