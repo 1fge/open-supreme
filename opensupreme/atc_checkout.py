@@ -32,7 +32,7 @@ def add_to_cart(session, item_id, size_id, style_id, task_name, screenlock):
 
     atc_post = session.post(atc_url, headers=headers, data=data)
     if atc_post.json():
-        if atc_post.json()['cart'][0]["in_stock"]:
+        if len(atc_post.json()['cart']) > 0 and atc_post.json()['cart'][0]["in_stock"]:
             with screenlock:
                 print(colored(f"{task_name}: Added to Cart", "blue"))
             return session
