@@ -33,8 +33,8 @@ def retrieve_item_id(session, category, positive_keywords, negative_keywords, ta
         item_id = parse_for_ids(stock, category, positive_keywords, negative_keywords, task_name, screenlock)
         if item_id:
             return item_id
-        
-        time.sleep(0.75)
+
+        session.event.wait(timeout=0.75)
         
 def retrieve_style_ids(session, item_id, size, style, task_name, screenlock):
     """
@@ -199,7 +199,7 @@ def parse_for_styles(session, item_id, size, style, task_name, screenlock):
                     if itemsize["stock_level"] != 0:
                         return itemsize["id"], stylename["id"]
                     else:
-                        time.sleep(0.75)
+                        session.event.wait(timeout=0.75)
                         return "oos"
     with screenlock:
         print(colored(f"{task_name}: Task exiting, could not find style or size", "red")) 

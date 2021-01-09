@@ -30,12 +30,11 @@ def add_to_cart(session, item_id, size_id, style_id, task_name, screenlock):
         "qty": "1" 
     }
 
-    atc_post = session.post(atc_url, headers=headers, data=data)
-    if atc_post.json():
-        if len(atc_post.json()['cart']) > 0 and atc_post.json()['cart'][0]["in_stock"]:
-            with screenlock:
-                print(colored(f"{task_name}: Added to Cart", "blue"))
-            return session
+    atc_json = session.post(atc_url, headers=headers, data=data).json()
+    if atc_json and atc_json["cart"] and atc_json["cart"][0]["in_stock"]:
+        with screenlock:
+            print(colored(f"{task_name}: Added to Cart", "blue"))
+        return session
 
 def make_checkout_parameters(session, profile, headers):
     """
@@ -72,7 +71,7 @@ def send_checkout_request(session, profile, delay, task_name, start_checkout_tim
     }
 
     checkout_params = make_checkout_parameters(session, profile, headers)
-    time.sleep(delay)
+    session.event.wait(timeout=delay)
     checkout_request = session.post("https://www.supremenewyork.com/checkout.json", headers=headers, data=checkout_params)
     total_checkout_time = round(time.time() - start_checkout_time, 2)
 
@@ -121,7 +120,7 @@ def display_slug_status(session, checkout_response, task_name, screenlock):
             elif slug_status == "failed":
                 print(colored(f"{task_name}: Checkout Failed", "red"))
                 return "failed"
-        time.sleep(10)
+        session.event.wait(timeout=10)
 
 def get_order_status(session, checkout_request, task_name, screenlock):
     """
