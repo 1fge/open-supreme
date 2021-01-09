@@ -54,7 +54,7 @@ def make_checkout_parameters(session, profile, headers):
 
 def fetch_captcha(session, checkout_params, task_name, screenlock):
     with screenlock:
-        print(colored(f"{task_name}: Waiting for Captcha...", "blue"))
+        print(colored(f"{task_name}: Waiting for Captcha...", "cyan"))
     
     while True:
         try:
