@@ -1,5 +1,6 @@
 import sys
 import time
+import requests
 from termcolor import colored
 from .get_params import get_params
 
@@ -43,13 +44,25 @@ def make_checkout_parameters(session, profile, headers):
     """
 
     checkout_page_content = session.get("https://www.supremenewyork.com/mobile/#checkout", headers=headers)
-    cookie_sub = session.cookies.get_dict()["pure_cart"]
+    cookie_sub = session.cookies.get_dict()["pure_cart"].split("%2C%22cookie")[0] + "%7D" # convert encoded {"xxxxx":1,"cookie":"1+item--xxxxx,yyyyy"} -> {"xxxxx":1}
     checkout_params = get_params(checkout_page_content.content, profile, cookie_sub)
 
     if not checkout_params:
         sys.exit("Error with parsing checkout parameters")
     else:
         return checkout_params
+
+def fetch_captcha(session, checkout_params, task_name, screenlock):
+    with screenlock:
+        print(colored(f"{task_name}: Waiting for Captcha...", "blue"))
+    
+    while True:
+        try:
+            captcha_response = session.get("http://127.0.0.1:5000/www.supremenewyork.com/token", timeout=0.1)
+            if captcha_response.status_code == 200:
+                return captcha_response.text
+        except requests.exceptions.Timeout:
+            pass
 
 def send_checkout_request(session, profile, delay, task_name, start_checkout_time, screenlock):
     """
@@ -71,6 +84,8 @@ def send_checkout_request(session, profile, delay, task_name, start_checkout_tim
     }
 
     checkout_params = make_checkout_parameters(session, profile, headers)
+    checkout_params["g-recaptcha-response"] = fetch_captcha(session, checkout_params, task_name, screenlock)
+
     session.event.wait(timeout=delay)
     checkout_request = session.post("https://www.supremenewyork.com/checkout.json", headers=headers, data=checkout_params)
     total_checkout_time = round(time.time() - start_checkout_time, 2)

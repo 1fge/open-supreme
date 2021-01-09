@@ -1,7 +1,10 @@
 import os
 import json
+import logging
 import colorama
+import threading
 from termcolor import colored
+from harvester import Harvester
 from opensupreme import run_all
 from opensupreme.gui import (add_profile, delete_profile, view_profile, 
     edit_profile, add_task, delete_task, view_task, edit_task)
@@ -154,5 +157,19 @@ def mainmenu():
             print(colored("You must make a task first!", "red"))
             mainmenu()
 
-if __name__ == "__main__":            
+def start_captcha_server():
+    logging.getLogger('harvester').setLevel(logging.CRITICAL)
+    harvester = Harvester()
+
+    tokens = harvester.intercept_recaptcha_v2(
+        domain='www.supremenewyork.com',
+        sitekey='6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz'
+    )
+
+    server_thread = threading.Thread(target=harvester.serve, daemon=True)
+    server_thread.start()
+    harvester.launch_browser()
+
+if __name__ == "__main__":
+    start_captcha_server()
     mainmenu()
