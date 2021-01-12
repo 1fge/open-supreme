@@ -8,7 +8,6 @@ def get_stock(session):
     Return its content.
     """
 
-    url = "https://www.supremenewyork.com/mobile_stock.json"
     headers = {
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/80.0.3987.95 Mobile/15E148 Safari/604.1",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -20,7 +19,12 @@ def get_stock(session):
         "Cache-Control": "no-cache",
         "TE": "Trailers"
     }
-    return session.get(url, headers=headers).json()
+    url = "https://www.supremenewyork.com/mobile_stock.json"
+
+    response = session.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    return None
 
 def retrieve_item_id(session, category, positive_keywords, negative_keywords, task_name, screenlock):
     """
@@ -30,11 +34,12 @@ def retrieve_item_id(session, category, positive_keywords, negative_keywords, ta
 
     while True:
         stock = get_stock(session)
-        item_id = parse_for_ids(stock, category, positive_keywords, negative_keywords, task_name, screenlock)
-        if item_id:
-            return item_id
+        if stock is not None:
+            item_id = parse_for_ids(stock, category, positive_keywords, negative_keywords, task_name, screenlock)
+            if item_id is not None:
+                return item_id
 
-        session.event.wait(timeout=0.75)
+        session.event.wait(timeout=1)
         
 def retrieve_style_ids(session, item_id, size, style, task_name, screenlock):
     """
@@ -164,13 +169,11 @@ def parse_for_ids(stock, task_category, positive_keywords, negative_keywords, ta
         if check_pos_neg(itemname, positive_keywords, negative_keywords):
             return item["id"]
 
-
 def get_item_variants(session, item_id):
     """
     Go to the item's endpoint and return its content
     """
 
-    item_url = f"https://www.supremenewyork.com/shop/{item_id}.json" 
     headers = {
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/80.0.3987.95 Mobile/15E148 Safari/604.1",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -182,7 +185,12 @@ def get_item_variants(session, item_id):
         "Cache-Control": "no-cache",
         "TE": "Trailers"
     }
-    return session.get(item_url, headers=headers).json()
+    item_url = f"https://www.supremenewyork.com/shop/{item_id}.json" 
+
+    response = session.get(item_url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    return None
  
 def parse_for_styles(session, item_id, size, style, task_name, screenlock):
     """

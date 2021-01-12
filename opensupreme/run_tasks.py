@@ -109,8 +109,8 @@ def run_task(session, positive_keywords, negative_keywords, category, size, colo
 
         start_checkout_time = time.time()
         item_id, size_id, style_id = return_item_ids(session, positive_keywords, negative_keywords, category, size, color, task_name, screenlock)
-        session = add_to_cart(session, item_id, size_id, style_id, task_name, screenlock)
-        if session:
+        session, successful_atc = add_to_cart(session, item_id, size_id, style_id, task_name, screenlock)
+        if successful_atc:
             if checkout(session, profile_data, delay, task_name, start_checkout_time, screenlock):
                 break
 

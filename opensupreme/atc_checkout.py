@@ -8,6 +8,9 @@ def add_to_cart(session, item_id, size_id, style_id, task_name, screenlock):
     """
     Add an item to cart with a specific item_id, size_id, and style_id.
     Only return session object if item added to cart properly.
+
+    Returns:
+        requests.Session, bool: Our requests.session along with a bool to designate if ATC success
     """
 
     headers = {
@@ -24,18 +27,25 @@ def add_to_cart(session, item_id, size_id, style_id, task_name, screenlock):
         'Cache-Control': 'no-cache',
         'TE': 'Trailers',
     }
-    atc_url = f"https://www.supremenewyork.com/shop/{item_id}/add.json"
     data = {
         "s": size_id,
         "st": style_id,
         "qty": "1" 
     }
+    atc_url = f"https://www.supremenewyork.com/shop/{item_id}/add.json"
 
-    atc_json = session.post(atc_url, headers=headers, data=data).json()
+    while True: # keep making checkout post until 200 response
+        atc_response = session.post(atc_url, headers=headers, data=data)
+        if atc_response.status_code == 200:
+            break
+        session.event.wait(timeout=1.25)
+
+    atc_json = atc_response.json()
     if atc_json and atc_json["cart"] and atc_json["cart"][0]["in_stock"]:
         with screenlock:
             print(colored(f"{task_name}: Added to Cart", "blue"))
-        return session
+        return session, True
+    return session, False
 
 def make_checkout_parameters(session, profile, headers):
     """
@@ -49,8 +59,7 @@ def make_checkout_parameters(session, profile, headers):
 
     if not checkout_params:
         sys.exit("Error with parsing checkout parameters")
-    else:
-        return checkout_params
+    return checkout_params
 
 def fetch_captcha(session, checkout_params, task_name, screenlock):
     with screenlock:
@@ -67,7 +76,7 @@ def fetch_captcha(session, checkout_params, task_name, screenlock):
 def send_checkout_request(session, profile, delay, task_name, start_checkout_time, screenlock):
     """
     Sleep for the length of the checkout delay,
-    then send the checkout request with or without proxies.
+    then send the checkout request.
     Return the content from the checkout request.
     """
 
@@ -82,17 +91,22 @@ def send_checkout_request(session, profile, delay, task_name, start_checkout_tim
         'Cache-Control': 'no-cache',
         'TE': 'Trailers',
     }
-
+    checkout_url = "https://www.supremenewyork.com/checkout.json"
     checkout_params = make_checkout_parameters(session, profile, headers)
     checkout_params["g-recaptcha-response"] = fetch_captcha(session, checkout_params, task_name, screenlock)
 
-    session.event.wait(timeout=delay)
-    checkout_request = session.post("https://www.supremenewyork.com/checkout.json", headers=headers, data=checkout_params)
-    total_checkout_time = round(time.time() - start_checkout_time, 2)
-
     with screenlock:
-        print(colored(f"{task_name}: Sent Checkout Data ({total_checkout_time} seconds)", "magenta"))
-    return checkout_request
+        print(colored(f"{task_name}: Waiting Checkout Delay...", "yellow"))
+    session.event.wait(timeout=delay)
+
+    while True: # keep sending checkout request until 200 status code
+        checkout_request = session.post(checkout_url, headers=headers, data=checkout_params)
+        if checkout_request.status_code == 200:
+            total_checkout_time = round(time.time() - start_checkout_time, 2)
+            with screenlock:
+                print(colored(f"{task_name}: Sent Checkout Data ({total_checkout_time} seconds)", "magenta"))
+            return checkout_request
+        session.event.wait(timeout=1.25)
 
 def get_slug_status(session, slug):
     """
