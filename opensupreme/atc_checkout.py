@@ -4,7 +4,7 @@ import requests
 from termcolor import colored
 from .get_params import get_params
 
-def add_to_cart(session, item_id, size_id, style_id, task_name, screenlock):
+def add_to_cart(session, item_id, size_id, style_id, atc_chk, task_name, screenlock):
     """
     Add an item to cart with a specific item_id, size_id, and style_id.
     Only return session object if item added to cart properly.
@@ -30,7 +30,8 @@ def add_to_cart(session, item_id, size_id, style_id, task_name, screenlock):
     data = {
         "s": size_id,
         "st": style_id,
-        "qty": "1" 
+        "qty": "1",
+        "chk": atc_chk
     }
     atc_url = f"https://www.supremenewyork.com/shop/{item_id}/add.json"
 
@@ -64,7 +65,7 @@ def make_checkout_parameters(session, profile, headers):
 def fetch_captcha(session, checkout_params, task_name, screenlock):
     with screenlock:
         print(colored(f"{task_name}: Waiting for Captcha...", "cyan"))
-    
+
     while True:
         try:
             captcha_response = session.get("http://127.0.0.1:5000/www.supremenewyork.com/token", timeout=0.1)
@@ -111,8 +112,8 @@ def send_checkout_request(session, profile, delay, task_name, start_checkout_tim
 def get_slug_status(session, slug):
     """
     A slug is a unique id for each potential Supreme order.
-    This function goes to a url based off of the slug, and checks 
-    the order status. 
+    This function goes to a url based off of the slug, and checks
+    the order status.
     """
 
     headers = {
@@ -158,7 +159,7 @@ def get_order_status(session, checkout_request, task_name, screenlock):
     If it doesn't instantly fail, display the status of our checkout,
     otherwise restart the program.
     """
-    
+
     checkout_response = checkout_request.json()
     if checkout_response["status"] == "failed":
         with screenlock:
@@ -169,7 +170,7 @@ def get_order_status(session, checkout_request, task_name, screenlock):
         status = display_slug_status(session, checkout_response, task_name, screenlock)
         if status != "failed":
             return True
-        
+
 def checkout(session, profile, delay, task_name, start_checkout_time, screenlock):
     """
     Send the checkout request, monitor the status of the order,
@@ -178,5 +179,5 @@ def checkout(session, profile, delay, task_name, start_checkout_time, screenlock
     checkout_request = send_checkout_request(session, profile, delay, task_name, start_checkout_time, screenlock)
     if get_order_status(session, checkout_request, task_name, screenlock):
         return True
-    
+
 

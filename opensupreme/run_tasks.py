@@ -41,18 +41,18 @@ class Task(threading.Thread):
         self.session = SignaledSession()
         self.session.event = self.event # pass the threading Event to our custom Session so we can easily check if set
 
-    def run(self):        
+    def run(self):
         set_session_proxy(self.session, self.proxy)
         run_task(
             self.session,
-            self.positive_keywords, 
-            self.negative_keywords, 
-            self.category, 
-            self.size, 
-            self.color, 
-            self.profile_data, 
-            self.delay, 
-            self.task_name, 
+            self.positive_keywords,
+            self.negative_keywords,
+            self.category,
+            self.size,
+            self.color,
+            self.profile_data,
+            self.delay,
+            self.task_name,
             self.screenlock
         )
 
@@ -108,11 +108,11 @@ def run_task(session, positive_keywords, negative_keywords, category, size, colo
             print(colored(f"{task_name}: Searching for",  attrs=["bold"]), colored(positive_keywords, "cyan"))
 
         start_checkout_time = time.time()
-        item_id, size_id, style_id = return_item_ids(session, positive_keywords, negative_keywords, category, size, color, task_name, screenlock)
-        session, successful_atc = add_to_cart(session, item_id, size_id, style_id, task_name, screenlock)
-        if successful_atc:
-            if checkout(session, profile_data, delay, task_name, start_checkout_time, screenlock):
-                break
+        item_id, size_id, style_id, atc_chk = return_item_ids(session, positive_keywords, negative_keywords, category, size, color, task_name, screenlock)
+        session, successful_atc = add_to_cart(session, item_id, size_id, style_id, atc_chk, task_name, screenlock)
+
+        if successful_atc and checkout(session, profile_data, delay, task_name, start_checkout_time, screenlock):
+            break
 
 def create_threads(tasks_file, profiles_file):
     with open(tasks_file) as f:
@@ -154,16 +154,9 @@ def run_all(tasks_file, profiles_file):
     if threads:
         for t in threads:
             t.start()
-    
+
     input() # Allow user to stop all tasks by entering any combination of keys
     for t in threads:
         t.stop()
     for t in threads: # t.join() # Wait for thread to terminate before handing back control
         t.join()
-
-
-
-
-
-
-    
