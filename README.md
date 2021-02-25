@@ -20,6 +20,7 @@ To Install Required Modules:
 pip install -r requirements.txt
 ```
 
+**NOTE:** `Google Chrome` is required for the Captcha harvester to work properly.
   
 
 ## Usage
