@@ -10,7 +10,7 @@ If you encounter any problems feel free to message me on Discord or Twitter.
 * Proxy support
 
 ## Installation
-**Make sure you are using Python >=3.7.0**  
+**Make sure you are using Python >=3.7.0 on Windows/Mac OS**  
 To Install Files:  
 ```bash
 git clone https://github.com/1fge/open-supreme
