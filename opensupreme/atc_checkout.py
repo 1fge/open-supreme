@@ -10,7 +10,7 @@ def add_to_cart(session, item_id, size_id, style_id, atc_chk, task_name, screenl
     Only return session object if item added to cart properly.
 
     Returns:
-        requests.Session, bool: Our requests.session along with a bool to designate if ATC success
+        requests.Session, float/None: Our requests.session along with the ATC timestamp if successful
     """
 
     headers = {
@@ -45,8 +45,8 @@ def add_to_cart(session, item_id, size_id, style_id, atc_chk, task_name, screenl
     if atc_json and atc_json["cart"] and atc_json["cart"][0]["in_stock"]:
         with screenlock:
             print(colored(f"{task_name}: Added to Cart", "blue"))
-        return session, True
-    return session, False
+        return session, time.time()
+    return session, None
 
 def make_checkout_parameters(session, profile, headers):
     """
@@ -74,7 +74,7 @@ def fetch_captcha(session, checkout_params, task_name, screenlock):
         except requests.exceptions.Timeout:
             pass
 
-def send_checkout_request(session, profile, delay, task_name, start_checkout_time, screenlock):
+def send_checkout_request(session, profile, delay, atc_time, task_name, start_checkout_time, screenlock):
     """
     Sleep for the length of the checkout delay,
     then send the checkout request.
@@ -96,9 +96,14 @@ def send_checkout_request(session, profile, delay, task_name, start_checkout_tim
     checkout_params = make_checkout_parameters(session, profile, headers)
     checkout_params["g-recaptcha-response"] = fetch_captcha(session, checkout_params, task_name, screenlock)
 
-    with screenlock:
-        print(colored(f"{task_name}: Waiting Checkout Delay...", "yellow"))
-    session.event.wait(timeout=delay)
+    # skip atc delay if captcha solve took longer than delay
+    if time.time() < delay + atc_time:
+        with screenlock:
+            print(colored(f"{task_name}: Waiting Checkout Delay...", "yellow"))
+        modified_delay = (delay + atc_time) - int(time.time())
+        session.event.wait(timeout=(modified_delay))
+    else:
+        print(colored(f"{task_name}: Skipping Checkout Delay...", "yellow"))
 
     while True: # keep sending checkout request until 200 status code
         checkout_request = session.post(checkout_url, headers=headers, data=checkout_params)
@@ -171,12 +176,12 @@ def get_order_status(session, checkout_request, task_name, screenlock):
         if status != "failed":
             return True
 
-def checkout(session, profile, delay, task_name, start_checkout_time, screenlock):
+def checkout(session, profile, delay, atc_time, task_name, start_checkout_time, screenlock):
     """
     Send the checkout request, monitor the status of the order,
     and stop the program upon a successful purchase.
     """
-    checkout_request = send_checkout_request(session, profile, delay, task_name, start_checkout_time, screenlock)
+    checkout_request = send_checkout_request(session, profile, delay, atc_time, task_name, start_checkout_time, screenlock)
     if get_order_status(session, checkout_request, task_name, screenlock):
         return True
 

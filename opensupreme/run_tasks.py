@@ -109,9 +109,9 @@ def run_task(session, positive_keywords, negative_keywords, category, size, colo
 
         start_checkout_time = time.time()
         item_id, size_id, style_id, atc_chk = return_item_ids(session, positive_keywords, negative_keywords, category, size, color, task_name, screenlock)
-        session, successful_atc = add_to_cart(session, item_id, size_id, style_id, atc_chk, task_name, screenlock)
+        session, atc_time = add_to_cart(session, item_id, size_id, style_id, atc_chk, task_name, screenlock)
 
-        if successful_atc and checkout(session, profile_data, delay, task_name, start_checkout_time, screenlock):
+        if atc_time is not None and checkout(session, profile_data, delay, atc_time, task_name, start_checkout_time, screenlock):
             break
 
 def create_threads(tasks_file, profiles_file):

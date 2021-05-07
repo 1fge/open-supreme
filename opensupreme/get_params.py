@@ -42,7 +42,8 @@ def assign_custom_values(checkout_data, profile_data, custom_values):
     """
 
     for value in custom_values:
-        checkout_data[value["name"]] = value["value"]
+        if value["name"] not in checkout_data:
+            checkout_data[value["name"]] = value["value"]
 
         if not value["value"]:
             placeholder = value.get("placeholder")
@@ -56,7 +57,14 @@ def assign_custom_values(checkout_data, profile_data, custom_values):
                 checkout_data[value_name] = profile_data["cvv"]
             elif "card" in placeholder or "credit" in placeholder:
                 checkout_data[value_name] = profile_data["card_number"]
+        else:
+            name = sanitize_value(value.get("name", ""))
+            input_value = sanitize_value(value.get("value", ""))
 
+            if "credit" in name and "type" in name and "credit" in input_value:
+                checkout_data[value.get("name")] = value.get("value")
+            elif "terms" in name or "terms" in sanitize_value(value.get("id", "")) and input_value != "0":
+                checkout_data[value.get("name")] = value.get("value")
     return checkout_data
 
 
@@ -144,11 +152,6 @@ def get_select_field_values(checkout_data, profile_data, select_fields):
 
         elif "year" in name or "year" in element_id:
             checkout_data[select_field["name"]] = profile_data["exp_year"]
-
-        elif ("credit" in name and "type" in name) or ("credit" in element_id and "type" in element_id):
-            for option in select_field.find_all("option"):
-                if "credit" in option.get("value"):
-                    checkout_data[select_field["name"]] = option.get("value")
 
     return checkout_data
 
