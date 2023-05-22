@@ -1,5 +1,5 @@
 beautifulsoup4==4.7.1
 captcha-harvester==2.1.1
-requests==2.23.0
+requests==2.31.0
 colorama==0.4.3
 termcolor==1.1.0
